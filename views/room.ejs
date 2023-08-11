@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="/stylesheets/room.css">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+</head>
+
+<body>
+    <div id="main">
+
+        <div class="nav">
+            <h4>Your Room Key is: <%= roomId %>
+            </h4>
+            <div class="navitems">
+                <a href="/logout"> <button>End Meeting</button></a>
+            </div>
+        </div>
+        <div id="hero">
+            <div id="controllers">
+
+            </div>
+            <div id="left">
+
+            </div>
+            <div id="right">
+                <div id="right-header">
+                    <h4>Chats</h4>
+                </div>
+                <div id="chat-area">
+
+                </div>
+                <div id="chati-input-contaner">
+                    <i class="ri-send-plane-2-line" id="sendmsgbtn"></i>
+                    <input id="msginput" type="text" name="msg" placeholder="Enter your msg">
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.js"
+        integrity="sha512-zoJXRvW2gC8Z0Xo3lBbao5+AS3g6YWr5ztKqaicua11xHo+AvE1b0lT9ODgrHTmNUxeCw0Ry4BGRYZfXu70weg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script>
+        // console.log(" room id is: <%= roomId %>")
+        var username = "<%= username.username %>"
+        var name = "<%= username.name %>"
+        var ROOM_ID = "<%= roomId %>"
+        var videoGrid = document.querySelector("#left")
+        console.log(videoGrid)
+        var socket = io();
+        console.log(username)
+
+        socket.emit('user-joined', username)
+
+        socket.on("userconnected", (peerid, loggedInUser) => {
+            console.log("new user is connected id is:" + peerid + " and the username is " + loggedInUser)
+            alert(`${loggedInUser} joined the meeting`)
+        })
+        socket.on("userdisconneted", (peerid, loggedInUser) => {
+            console.log(" user is disconnected id is:" + peerid + " and the username is " + loggedInUser)
+            alert(`${loggedInUser} leaved the meeting`)
+        })
+
+        var peer = new Peer()
+        peer.on('open', id => {
+
+            socket.emit('join-room', ROOM_ID, id, username)
+            // console.log("user id: "+id)
+        })
+
+        // Chat systummmmmmmmmmmmm---->
+        var sendmsgbtn = document.querySelector("#sendmsgbtn")
+        var msginput = document.querySelector("#msginput")
+        sendmsgbtn.addEventListener("click", () => {
+            var msginputvalue = msginput.value
+            socket.emit("new-chat", msginputvalue,name)
+        })
+
+        function scrollToElement(element) {
+            var chatArea = document.getElementById("chat-area");
+            chatArea.scrollTop = element.offsetTop;
+        }
+
+        socket.on('newmessages', (newmsg,name) => {
+            var divElement = document.createElement("div");
+            divElement.classList.add("my-div-class");
+
+            var paragraphElement = document.createElement("p");
+            paragraphElement.classList.add("my-paragraph-class");
+
+
+            var paragraphText = document.createTextNode(`${name}: ${newmsg}`);
+
+            paragraphElement.appendChild(paragraphText);
+
+            divElement.appendChild(paragraphElement);
+            var chatArea = document.getElementById("chat-area");
+
+            chatArea.appendChild(divElement);
+            scrollToElement(paragraphElement);
+
+            console.log(`showing new msgs ${newmsg}`)
+        })
+    </script>
+</body>
+
+</html>

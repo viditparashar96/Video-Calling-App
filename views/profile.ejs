@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="/stylesheets/profile.css">
+</head>
+<body>
+    
+   <div id="overlay">
+        <h3 class="close" style="color: aliceblue;">close</h3>
+        <div class="inputf">
+            <input id="keyinput" type="text" placeholder="Entery room key">
+            <button class="inputSubmit">Submit</button>
+        </div>
+   </div>
+    <div id="main">
+
+        <nav>
+            <div class="logo">
+                <h3>logo</h3>
+            </div>
+            <div class="navitems">
+                <a href="">Home</a>
+                <a href="">About</a>
+                <a href="/logout"> <button>Log out</button></a>
+                
+            </div>
+        </nav>
+
+        <div class="hero">
+            <div class="heading">
+                <h1 class="title">Hey <span><%= loggedInUser.name  %></span></h1>
+                <h1 class="title">How's your day going !!</h1>
+                <h1 class="title"></h1>
+            </div>
+
+            <div class="buttons">
+                <div class="btns">
+                <a href="/meeting"><button>Create Meeting</button></a>
+                    <button class="joinbtn">Join Meeting</button>
+                </div>
+            </div>
+         
+            
+        </div>
+    </div>
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.4.0/axios.min.js" integrity="sha512-uMtXmF28A2Ab/JJO2t/vYhlaa/3ahUOgj1Zf27M5rOo8/+fcTUVH0/E0ll68njmjrLqOBjXM3V9NiPFL5ywWPQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script>
+
+    var joinbtn=document.querySelector(".joinbtn");
+    var input =document.querySelector("#keyinput")
+    var inputSubmit=document.querySelector(".inputSubmit")
+    joinbtn.addEventListener("click",()=>{
+        console.log("click")
+        document.querySelector("#overlay").style.display="block"
+    })
+
+    inputSubmit.addEventListener("click",async ()=>{
+        var inpval=input.value
+        window.location.href=`/meeting/${inpval}`
+    })
+    document.querySelector(".close").addEventListener("click",()=>{
+        document.querySelector("#overlay").style.display="none"
+
+    })
+
+  </script>
+</body>
+</html>

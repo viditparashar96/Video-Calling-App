@@ -2,7 +2,12 @@ var mongoose = require("mongoose")
 
 const plm = require("passport-local-mongoose")
 
-mongoose.connect("mongodb://127.0.0.1:27017/zoom")
+mongoose.connect("mongodb+srv://viditsharma818:Terabaapbc1@cluster0.psozdat.mongodb.net/user?retryWrites=true&w=majority").then(()=>{
+  console.log("connection successful")
+}).catch((err)=>{
+  console.log("connection Unsuccessful: ",err.message)
+
+})
 
 
 var userdata = mongoose.Schema({

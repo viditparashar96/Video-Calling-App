@@ -17,6 +17,8 @@ passport.use(new localStrategy(userdata.authenticate()))
 // }
 var server = require('http').createServer(router);
 
+router.use('/peerjs', peerServer);
+
 
 
 /* GET home page. */
@@ -92,7 +94,6 @@ router.get("/meeting/:room", isLoggedIn,async function(req,res,next){
   console.log(currentUser)
   res.render('room',{roomId:req.params.room,username:currentUser})
 })
-router.use('/peerjs', peerServer);
 
 
 function isLoggedIn(req,res,next){

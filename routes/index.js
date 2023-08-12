@@ -1,3 +1,4 @@
+const http = require('http');
 var express = require('express');
 var router = express.Router();
 const { v4: uuidv4 } = require('uuid');
@@ -6,6 +7,9 @@ var passport = require("passport")
 const localStrategy = require("passport-local")
 // var ExpressPeerServer = require('peer').ExpressPeerServer;
 const { ExpressPeerServer } = require('peer');
+const server = http.createServer(router);
+
+
 const peerServer = ExpressPeerServer(server, {
   debug: true, // Set to true for debugging
 });
@@ -15,7 +19,7 @@ passport.use(new localStrategy(userdata.authenticate()))
 // var options = {
 //   debug: true
 // }
-var server = require('http').createServer(router);
+// var server = require('http').createServer(router);
 
 router.use('/peerjs', peerServer);
 

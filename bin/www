@@ -6,7 +6,7 @@
 
 var app = require('../app');
 var debug = require('debug')('zoom-vidit-chutiya-ki-app:server');
-var http = require('http');
+var http = require('node:http');
 let socketapi = require("../socketapi");
 /**
  * Get port from environment and store in Express.

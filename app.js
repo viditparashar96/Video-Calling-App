@@ -7,12 +7,23 @@ const expressSession = require("express-session")
 var passport = require("passport")
 var indexRouter = require('./routes/index.js');
 var usersRouter = require('./routes/users.js');
+const http = require('http');
+const { ExpressPeerServer } = require('peer');
+
 
 var app = express();
+const server = http.createServer(app);
+
+
+const peerServer = ExpressPeerServer(server, {
+  debug: true, // Set to true for debugging
+});
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
+
+app.use('/peerjs', peerServer);
 
 app.use(expressSession({
   resave:false,

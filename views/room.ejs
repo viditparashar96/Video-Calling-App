@@ -77,8 +77,9 @@
         // Chat systummmmmmmmmmmmm---->
         var sendmsgbtn = document.querySelector("#sendmsgbtn")
         var msginput = document.querySelector("#msginput")
+        var msginputvalue=""
         sendmsgbtn.addEventListener("click", () => {
-            var msginputvalue = msginput.value
+            msginputvalue = msginput.value
             socket.emit("new-chat", msginputvalue,name)
         })
 
@@ -106,6 +107,19 @@
             scrollToElement(paragraphElement);
 
             console.log(`showing new msgs ${newmsg}`)
+            msginputvalue.value=""
+            
+        })
+        // On enter send msg---->
+        document.addEventListener("keydown",(e)=>{
+            if(e.key==="Enter" || event.keyCode===13){
+                sendmsgbtn.click()
+                // console.log("Enter kiya")
+                msginputvalue.value=""
+
+
+                
+            }
         })
     </script>
 </body>

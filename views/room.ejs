@@ -23,7 +23,7 @@
             <div id="controllers">
 
             </div>
-            <div id="left">
+            <div id="left" class="video-grid">
 
             </div>
             <div id="right">
@@ -52,75 +52,129 @@
         var name = "<%= username.name %>"
         var ROOM_ID = "<%= roomId %>"
         var videoGrid = document.querySelector("#left")
-        console.log(videoGrid)
+        // console.log(videoGrid)
         var socket = io();
         console.log(username)
 
-        socket.emit('user-joined', username)
 
-        socket.on("userconnected", (peerid, loggedInUser) => {
-            console.log("new user is connected id is:" + peerid + " and the username is " + loggedInUser)
-            alert(`${loggedInUser} joined the meeting`)
-        })
-        socket.on("userdisconneted", (peerid, loggedInUser) => {
-            console.log(" user is disconnected id is:" + peerid + " and the username is " + loggedInUser)
-            alert(`${loggedInUser} leaved the meeting`)
-        })
+        const myVideo = document.createElement('video')
+        myVideo.muted = true
 
-        var peer = new Peer()
-        peer.on('open', id => {
+        // Video=====>
+        let myVideoStream
 
-            socket.emit('join-room', ROOM_ID, id, username)
-            // console.log("user id: "+id)
-        })
+        
+        navigator.mediaDevices.getUserMedia({
+            video: true,
+            audio: true
+        }).then(stream => {
+            myVideoStream = stream;
+            addVideoStream(myVideo, stream)
 
-        // Chat systummmmmmmmmmmmm---->
-        var sendmsgbtn = document.querySelector("#sendmsgbtn")
-        var msginput = document.querySelector("#msginput")
-        var msginputvalue=""
-        sendmsgbtn.addEventListener("click", () => {
-            msginputvalue = msginput.value
-            socket.emit("new-chat", msginputvalue,name)
-        })
+            socket.on("userconnected", (peerid, loggedInUser) => {
+                // console.log("new user is connected id is:" + peerid + " and the username is " + loggedInUser)
+                connectNewUser(peerid,stream)
+                alert(`${loggedInUser} joined the meeting`)
+            })
 
-        function scrollToElement(element) {
-            var chatArea = document.getElementById("chat-area");
-            chatArea.scrollTop = element.offsetTop;
-        }
+            peer.on('call',call=>{
+                call.answer(stream)
+                const video=document.createElement('video')
+                call.on('stream',userVideoStream=>{
+                    addVideoStream(video,userVideoStream)
+                })
+            })
 
-        socket.on('newmessages', (newmsg,name) => {
-            var divElement = document.createElement("div");
-            divElement.classList.add("my-div-class");
-
-            var paragraphElement = document.createElement("p");
-            paragraphElement.classList.add("my-paragraph-class");
+            })
 
 
-            var paragraphText = document.createTextNode(`${name}: ${newmsg}`);
 
-            paragraphElement.appendChild(paragraphText);
-
-            divElement.appendChild(paragraphElement);
-            var chatArea = document.getElementById("chat-area");
-
-            chatArea.appendChild(divElement);
-            scrollToElement(paragraphElement);
-
-            console.log(`showing new msgs ${newmsg}`)
-            msginputvalue.value=""
-            
-        })
-        // On enter send msg---->
-        document.addEventListener("keydown",(e)=>{
-            if(e.key==="Enter" || event.keyCode===13){
-                sendmsgbtn.click()
-                // console.log("Enter kiya")
-                msginputvalue.value=""
-
-
-                
+            function addVideoStream(video, stream) {
+                video.srcObject = stream
+                video.addEventListener('loadedmetadata', () => {
+                    video.play()
+                })
+                videoGrid.append(video)
             }
-        })
+
+
+
+            
+
+            socket.emit('user-joined', username)
+
+           
+            socket.on("userdisconneted", (peerid, loggedInUser) => {
+                console.log(" user is disconnected id is:" + peerid + " and the username is " + loggedInUser)
+                alert(`${loggedInUser} leaved the meeting`)
+            })
+            var peer = new Peer()
+            peer.on('open', id => {
+
+                socket.emit('join-room', ROOM_ID, id, username)
+                // console.log("user id: "+id)
+            })
+
+          const connectNewUser=(peerid,stream)=>{
+            console.log(peerid)
+                const call=peer.call(peerid,stream)
+                const video=document.createElement('video')
+                call.on('stream',userVideoStream=>{
+                    addVideoStream(video,userVideoStream)
+                })
+            }
+           
+
+            // Chat systummmmmmmmmmmmm---->
+            var sendmsgbtn = document.querySelector("#sendmsgbtn")
+            var msginput = document.querySelector("#msginput")
+            var msginputvalue = ""
+            sendmsgbtn.addEventListener("click", () => {
+                msginputvalue = msginput.value
+                socket.emit("new-chat", msginputvalue, name)
+            })
+
+            function scrollToElement(element) {
+                var chatArea = document.getElementById("chat-area");
+                chatArea.scrollTop = element.offsetTop;
+            }
+
+
+            // Chat system=========>
+
+            socket.on('newmessages', (newmsg, name) => {
+                var divElement = document.createElement("div");
+                divElement.classList.add("my-div-class");
+
+                var paragraphElement = document.createElement("p");
+                paragraphElement.classList.add("my-paragraph-class");
+
+
+                var paragraphText = document.createTextNode(`${name}: ${newmsg}`);
+
+                paragraphElement.appendChild(paragraphText);
+
+                divElement.appendChild(paragraphElement);
+                var chatArea = document.getElementById("chat-area");
+
+                chatArea.appendChild(divElement);
+                scrollToElement(paragraphElement);
+
+                console.log(`showing new msgs ${newmsg}`)
+                msginputvalue.value = ""
+
+            })
+            // On enter send msg---->
+            document.addEventListener("keydown", (e) => {
+                if (e.key === "Enter" || event.keyCode === 13) {
+                    sendmsgbtn.click()
+                    // console.log("Enter kiya")
+                    msginputvalue.value = ""
+
+
+
+                }
+            })
     </script>
 </body>
 
